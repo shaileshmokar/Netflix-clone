@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  build:
+  build-analyze-scan:
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -29,4 +29,13 @@ jobs:
           sudo apt-get install trivy -y
           #command to scan files
           trivy fs .
-      
+    
+      - name: Docker build and push
+        run: |
+          #run commands to build and push docker images
+          docker build --build-arg TMDB_V3_API_KEY=432e61a5b360a73deb3136c722330189 -t netflix .
+          docker tag netflix shaileshmokar/netflix:latest
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker push shaileshmokar/netflix:latest
+        env:
+          DOCKER_CLI_ACI: 1
